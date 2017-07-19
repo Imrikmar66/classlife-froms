@@ -42,10 +42,16 @@ function postClasslife( $contact_form ) {
     curl_close($ch);
 
     $distant_response = json_decode($result, true);
+    $error = "No error";
 
-    if( $result["status"] == "success") {
+    if( $distant_response["status"] == "success") {
         $status = "mail_sent";
         $message = "Le formulaire à bien été envoyé !";
+    }
+    else if ( $distant_response["status"] == "error" ) {
+        $status = "mail_failed";
+        $error = $distant_response["error"] ? $distant_response["error"] : $distant_response["msg"];
+        $message = "Une erreur est survenue lors de l'envoi... Veuillez réessayer plus tard";
     }
     else {
         $status = "mail_failed";
@@ -56,7 +62,8 @@ function postClasslife( $contact_form ) {
         "into" => '#' . $fields["_wpcf7_unit_tag"],
         "status" => $status,
         "message" => $message,
-        "errors" => $errors
+        "api_error" => $error,
+        "curl_errors" => $errors
     );
 
     echo json_encode($response);
