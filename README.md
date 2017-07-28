@@ -15,20 +15,22 @@ Idem Classlife Forms is an api caller extending wordpress contact form 7 extensi
 ### Second step
 Create the form with habitual contact form 7 rules, but with theses others rules : 
     - uses `-` for meta fields : 
-    ```
-        <label> Prénom (required)
+```
+<label> Prénom (required)
     [text* teacher_name] </label>
-    ```
-    ```
-    <label> Autres Prénoms (required)
+```
+```
+<label> Autres Prénoms (required)
     [text* meta-nombre2 ] </label>
-    ```
-    Here `teacher_name` will not changed and `meta-nombre2` will be retranscrite in `meta[nombre2]`.
+```
+Here `teacher_name` will not changed and `meta-nombre2` will be retranscrite in `meta[nombre2]`.
     
 ### Last step
-Use ``` [hidden perform "buildForm"] 
-    [hidden model"teacher"] ```
-    - perform will define type of api request (see the api documentation)
-    - model will define which type of model will be affected (see the api documentation)
+Use 
+``` [hidden perform "buildForm"] 
+    [hidden model"teacher"] 
+```
+- perform will define type of api request (see the api documentation)
+- model will define which type of model will be affected (see the api documentation)
     
-Your form should works now !
+#### Your form should works now !
