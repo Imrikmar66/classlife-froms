@@ -27,8 +27,9 @@ Here `teacher_name` will not changed and `meta-nombre2` will be retranscrite in 
     
 ### Last step
 Use 
-``` [hidden perform "buildForm"] 
-    [hidden model"teacher"] 
+``` 
+[hidden perform "buildForm"] 
+[hidden model"teacher"] 
 ```
 - perform will define type of api request (see the api documentation)
 - model will define which type of model will be affected (see the api documentation)
