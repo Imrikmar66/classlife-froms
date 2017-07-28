@@ -24,6 +24,8 @@ function postClasslife( $contact_form ) {
         return;
     
     $fields = $submission->get_posted_data();
+    $fields_unmeta_string = "";
+    $fields_meta_string = "";
     $fields_string = "";
     $error = "No error";
     $invalidFields = array();
@@ -47,23 +49,63 @@ function postClasslife( $contact_form ) {
         $fields['service'] = 'api';
         $fields['apiKey'] = $apikey;
         foreach($fields as $key=>$value) { 
+            if(stripos($key, "wpcf7") !== FALSE)
+                continue;
             if(stripos($key, "meta-") !== FALSE){
                 $key = str_replace("meta-", "meta[", $key);
                 $key .= "]";
+                $fields_meta_string .= $key.'='.$value.'&'; 
             }
-            $fields_string .= $key.'='.$value.'&'; 
+            else
+               $fields_unmeta_string .= $key.'='.$value.'&';
+
+            //$fields_string .= $key.'='.$value.'&';
         }
-        $fields_string = rtrim($fields_string, '&');
+        
+        //$fields_string = rtrim($fields_string, '&');
+        $fields_unmeta_string = rtrim($fields_unmeta_string, '&');
+
+        //Profile creation
+
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL, $url);
         curl_setopt($ch,CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_unmeta_string);
         $result = curl_exec($ch);
         $errors = curl_error($ch);
         curl_close($ch);
 
-        $distant_response = json_decode($result, true);
+        //edit just created profile with received id ... meta fix
+        $jsonArr = json_decode($result, true);
+
+        if( 
+            $fields['perform'] == 'buildForm'
+            && !isset($fields[$fields['model']."_id"])
+            && ($id = $jsonArr["id"]) 
+        ) {
+
+            $fields_meta_string .= $fields['model']."_id=" . $id . "&";
+            $fields_meta_string .= "service=" . $fields['service'] . "&";
+            $fields_meta_string .= "apiKey=" . $fields['apiKey'] . "&";
+            $fields_meta_string .= "model=" . $fields['model'] . "&";
+            $fields_meta_string .= "perform=" . $fields['perform'];
+
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_URL, $url);
+            curl_setopt($ch,CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_meta_string);
+            $result = curl_exec($ch);
+            $errors = curl_error($ch);
+            curl_close($ch);
+
+            $distant_response = json_decode($result, true);
+        }
+        else {
+            $distant_response["status"] == "error";
+            $distant_response["error"] = "received id is null or was never received";
+        }
 
         if( $distant_response["status"] == "success") {
             $status = "mail_sent";
@@ -86,12 +128,14 @@ function postClasslife( $contact_form ) {
         "message" => $message,
         "api_error" => $error,
         "curl_errors" => $errors,
-        "invalidFields" => $invalidFields/*,
+        "invalidFields" => $invalidFields,
+        "id" => $distant_response["id"]/*,
         "fields" => $fields,
         "fields_str" => $fields_string*/
     );
 
     echo json_encode($response);
+
     die();
 
 }
