@@ -13,8 +13,7 @@ Idem Classlife Forms is an api caller extending wordpress contact form 7 extensi
 - Create and save a new Contact From with title containing "`Classlife`"
 
 ### Second step
-Create the form with habitual contact form 7 rules, but with theses others rules : 
-    - uses `-` for meta fields : 
+Create the form with habitual contact form 7 rules, but with these other rule : uses `-` for meta fields : 
 ```
 <label> Prénom (required)
     [text* teacher_name] </label>
