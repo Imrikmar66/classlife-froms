@@ -15,8 +15,9 @@ add_filter('wpcf7_skip_mail','classlife_skip_mail');
 function postClasslife( $contact_form ) {
    $title = $contact_form->title;
    $apikey = get_option('classlife_api_key');
+   $apiurl = get_option('classlife_api_url');
 
-    if( stripos ($title, "classlife") === FALSE || strlen($apikey) == 0 )
+    if( stripos ($title, "classlife") === FALSE || strlen($apikey) == 0 || strlen($apiurl) == 0 )
        return;
 
     $submission = WPCF7_Submission::get_instance();
@@ -44,8 +45,6 @@ function postClasslife( $contact_form ) {
         }
     }
     else {
-
-        $url = 'https://lidembeta.classlife.education/app/apiv1.php';
         $fields['service'] = 'api';
         $fields['apiKey'] = $apikey;
         foreach($fields as $key=>$value) { 
@@ -68,7 +67,7 @@ function postClasslife( $contact_form ) {
         //Profile creation
 
         $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_URL, $apiurl);
         curl_setopt($ch,CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_unmeta_string);
@@ -92,7 +91,7 @@ function postClasslife( $contact_form ) {
             $fields_meta_string .= "perform=" . $fields['perform'];
 
             $ch = curl_init();
-            curl_setopt($ch,CURLOPT_URL, $url);
+            curl_setopt($ch,CURLOPT_URL, $apiurl);
             curl_setopt($ch,CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_meta_string);
@@ -156,10 +155,14 @@ function classlife_forms_settings_init(){
 }
 
 function classlife_forms_init(){
-    if(isset($_POST["classlife_api_key"])) {
+    if(isset($_POST["classlife_api_key"]))
         update_option("classlife_api_key", $_POST["classlife_api_key"]);
-    }
+
+    if(isset($_POST["classlife_api_url"]))
+        update_option("classlife_api_url", $_POST["classlife_api_url"]);
+
     $key = get_option('classlife_api_key');
+    $url = get_option('classlife_api_url');
 ?>
     <h1> Edit ClassLife API Key </h1>
     <form  method="post" enctype="multipart/form-data">
@@ -169,6 +172,13 @@ function classlife_forms_init(){
             <span>ClassLife APIKEY</span>
             <input placeholder="xxxxxxxxxxxxxxxxx" type="text" id="classlife_api_key" name="classlife_api_key" value="<?php echo  $key; ?>" />
         </label>
+        <br>
+        <?php settings_fields( 'classlife_api_url_setting' ); ?>
+        <?php do_settings_sections( 'classlife_api_url_setting' ); ?>
+        <label>
+            <span>ClassLife API URL</span>
+            <input placeholder="http://classlife-api.php" type="text" id="classlife_api_url" name="classlife_api_url" value="<?php echo  $url; ?>" />
+        </label>
         <?php submit_button('Valider') ?>
     </form>
 <?php
@@ -177,6 +187,9 @@ function classlife_forms_init(){
 function update_classlife_api_key(){
     add_option('classlife_api_key', "");
     register_setting( 'classlife_api_key_setting', 'classlife_api_key' );
+
+    add_option('classlife_api_url', "");
+    register_setting( 'classlife_api_url_setting', 'classlife_api_url' );
 }
 
 /****** client side script ******/
