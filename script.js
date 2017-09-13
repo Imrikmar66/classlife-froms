@@ -1,15 +1,13 @@
 var $ = jQuery;
 $(document).ready(function(){
 
-    $('.wpcf7-form input').each(function(){
+    $('.wpcf7-form select').each(function(){
 
-        var name = $(this).attr('name');
-        if(name && ( name.indexOf("meta-") > -1) ) {
+        $(this).children("option").each(function( i , $obj ){
 
-            name = name.replace("meta-", "meta[");
-            name += "]";
-            $(this).attr('name', name);
-        }
+            $(this).val(i+1);
+
+        });
 
     });
 

@@ -193,8 +193,8 @@ function update_classlife_api_key(){
 }
 
 /****** client side script ******/
-// function classlife_forms_script() {
-// 	wp_enqueue_script( 'classforms-script', plugin_dir_url( __FILE__ ) . '/script.js', array('jquery'), '1.0');
-// }
+function classlife_forms_script() {
+	wp_enqueue_script( 'classforms-script', plugin_dir_url( __FILE__ ) . '/script.js', array('jquery'), '1.0');
+}
 
-// add_action( 'wp_enqueue_scripts', 'classlife_forms_script' );
+add_action( 'wp_enqueue_scripts', 'classlife_forms_script' );
