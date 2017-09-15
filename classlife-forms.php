@@ -152,6 +152,7 @@ function postClasslife( $contact_form ) {
             $bot->addLine( "Prénom : " . $fields[ $fields['model']."_name" ]);
 
         $bot->addLine( "Voir sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s" );
+        $bot->addLine( "Edition sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s/edit/" . $id );
         $bot->send();
     }
 
