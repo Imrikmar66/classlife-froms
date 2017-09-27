@@ -1,6 +1,6 @@
 <?php
 /**
-* Plugin Name: Idem Classlife Forms Prod
+* Plugin Name: Idem Classlife Forms
 * Plugin URI: https://github.com/Imrikmar66/classlife-forms
 * Description: Link contactform 7 to classlife
 * Version: 1.0
@@ -48,10 +48,16 @@ function postClasslife( $contact_form ) {
         }
     }
     else {
+        $program = "";
+        if( isset( $fields['program'] ) )
+            $program = $fields["program"];
+
         $fields['service'] = 'api';
         $fields['apiKey'] = $apikey;
         foreach($fields as $key=>$value) { 
             if(stripos($key, "wpcf7") !== FALSE)
+                continue;
+            if(stripos($key, "program") !== FALSE)
                 continue;
             if(stripos($key, "meta-") !== FALSE){
                 $key = str_replace("meta-", "meta[", $key);
@@ -157,6 +163,7 @@ function postClasslife( $contact_form ) {
 
         $bot->addLine( "Voir sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s" );
         $bot->addLine( "Edition sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s/edit/" . $id );
+        $bot->addLine( "Programme associé : " . $program );
         $bot->send();
 
         //Change password
