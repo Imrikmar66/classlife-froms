@@ -1,6 +1,6 @@
 <?php
 /**
-* Plugin Name: Idem Classlife Forms
+* Plugin Name: Idem Classlife Forms Prod
 * Plugin URI: https://github.com/Imrikmar66/classlife-forms
 * Description: Link contactform 7 to classlife
 * Version: 1.0
@@ -63,12 +63,16 @@ function postClasslife( $contact_form ) {
 
             //$fields_string .= $key.'='.$value.'&';
         }
-        
+        if( isset( $fields[$fields['model']."_email"] ) ){
+            $key = "classlife_user";
+            $value = $fields[$fields['model']."_email"];
+            $fields_unmeta_string .= $key.'='.$value.'&';
+        }
+
         //$fields_string = rtrim($fields_string, '&');
         $fields_unmeta_string = rtrim($fields_unmeta_string, '&');
 
         //Profile creation
-
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL, $apiurl);
         curl_setopt($ch,CURLOPT_POST, TRUE);
@@ -154,6 +158,33 @@ function postClasslife( $contact_form ) {
         $bot->addLine( "Voir sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s" );
         $bot->addLine( "Edition sur classlife : https://lidembeta.classlife.education/admin/" . $fields['model'] . "s/edit/" . $id );
         $bot->send();
+
+        //Change password
+        if( $id = $jsonArr["id"] ) {
+            $options = [
+                "perform" => "setpassword",
+                "model" => $fields['model'],
+                "apiKey" => $apikey,
+                "service" => "api",
+                "id" => $id,
+                "password" => "PASS".$id
+            ];
+            $str_options = "";
+            foreach($options as $key=>$value)
+                $str_options .= $key.'='.$value.'&';
+            
+            $str_options = rtrim($str_options, '&');
+
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_URL, $apiurl);
+            curl_setopt($ch,CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch,CURLOPT_POSTFIELDS, $str_options);
+            $result = curl_exec($ch);
+            $errors = curl_error($ch);
+            curl_close($ch);
+        }
+
     }
 
     die();
